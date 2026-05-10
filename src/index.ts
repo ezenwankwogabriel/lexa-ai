@@ -2,11 +2,13 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import { healthRoutes } from './routes/health';
 import { identifyRoutes } from './routes/identify';
+import { searchRoutes } from './routes/search';
 
 const app = Fastify({ logger: true });
 
 app.register(healthRoutes);
 app.register(identifyRoutes);
+app.register(searchRoutes);
 
 const port = parseInt(process.env.PORT ?? '3000', 10);
 
