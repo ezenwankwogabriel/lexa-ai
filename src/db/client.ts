@@ -6,4 +6,7 @@ if (!process.env.DATABASE_URL) {
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ...(process.env.NODE_ENV === 'production' && {
+    ssl: { rejectUnauthorized: false },
+  }),
 });
