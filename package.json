@@ -7,7 +7,8 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/app.ts",
     "build": "tsc --outDir dist",
     "start": "node dist/app.js",
-    "migrate": "ts-node src/db/migrate.ts"
+    "migrate": "ts-node src/db/migrate.ts",
+    "test": "node --require ts-node/register src/tests/search.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
