@@ -8,12 +8,15 @@
     "build": "tsc --outDir dist",
     "start": "node dist/app.js",
     "migrate": "ts-node src/db/migrate.ts",
-    "test": "node --require ts-node/register src/tests/search.test.ts"
+    "test": "node --require ts-node/register src/tests/search.test.ts",
+    "warm-cache": "ts-node scripts/warm-cache.ts",
+    "warm-cache:retry": "ts-node scripts/retry-failures.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
+    "p-limit": "^7.3.0",
     "pg": "^8.12.0",
     "subtlex-word-frequencies": "^2.0.0"
   },
