@@ -31,6 +31,11 @@ export async function searchRoutes(app: FastifyInstance) {
     const input_normalised = input.toLowerCase().trim();
     const difficulty_score = getDifficultyScore(input_normalised);
 
+    const userRow = await pool.query('SELECT 1 FROM users WHERE id = $1', [user_id]);
+    if (!userRow.rowCount) {
+      return reply.status(401).send({ error: 'USER_NOT_FOUND' });
+    }
+
     const cached = await pool.query(
       'SELECT result_payload FROM result_cache WHERE input_normalised = $1',
       [input_normalised]
