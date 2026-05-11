@@ -9,7 +9,7 @@ return a JSON object that helps the user understand and improve their vocabulary
 Rules:
 - meaning: one plain sentence, no dictionary tone, max 20 words
 - usage_cues: 2-3 short usage patterns, e.g. "meticulous about X", "meticulous in X"
-- examples: one sentence each for formal, casual, professional contexts
+- examples: object with keys "formal", "casual", "professional" — one sentence each, e.g. {"formal":"...","casual":"...","professional":"..."}
 - alternatives: 3-5 better or related words, each with tone and intensity label
 - patterns: only populate if input is a phrase like "agree on" — \
   list 2-4 similar patterns that are commonly confused, e.g. ["agree on", "agree with", "agree to"]
@@ -24,7 +24,7 @@ Return ONLY valid JSON matching this exact shape. No markdown, no explanation.`;
 
 export async function generateVocabResult(input: string): Promise<VocabResult> {
   const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: 'claude-haiku-4-5',
     max_tokens: 600,
     system: [
       {
@@ -42,8 +42,10 @@ export async function generateVocabResult(input: string): Promise<VocabResult> {
   }
 
   try {
-    return JSON.parse(first.text) as VocabResult;
+    const raw = first.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    return JSON.parse(raw) as VocabResult;
   } catch {
+    console.error('AI raw response:', first.text);
     throw new Error('AI_PARSE_ERROR');
   }
 }
