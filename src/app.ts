@@ -5,6 +5,7 @@ import { identifyRoutes } from './routes/identify';
 import { searchRoutes } from './routes/search';
 import { reviewRoutes } from './routes/review';
 import { deviceRoutes } from './routes/device';
+import { vocabularyRoutes } from './routes/vocabulary';
 import { startReviewReminderJob } from './jobs/reviewReminder';
 
 const app = Fastify({ logger: true });
@@ -14,6 +15,7 @@ app.register(identifyRoutes);
 app.register(searchRoutes);
 app.register(reviewRoutes);
 app.register(deviceRoutes);
+app.register(vocabularyRoutes);
 
 startReviewReminderJob();
 
