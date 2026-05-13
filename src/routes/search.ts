@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { pool } from '../db/client';
 import { getDifficultyScore } from '../services/difficulty';
 import { generateVocabResult } from '../services/ai';
+import { scheduleDistractors } from '../services/distractors';
 import { validateInput } from '../hooks/validateInput';
 import { rateLimit } from '../hooks/rateLimit';
 
@@ -22,6 +23,17 @@ interface SearchBody {
   user_id: string;
   input: string;
   searched_at?: string;
+}
+
+async function fireDistractors(userId: string, word: string, meaning: string): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT id FROM review_queue
+     WHERE user_id = $1 AND input_normalised = $2 AND distractors IS NULL`,
+    [userId, word]
+  );
+  if (rows.length > 0) {
+    await scheduleDistractors(rows[0].id as string, word, meaning);
+  }
 }
 
 export async function searchRoutes(app: FastifyInstance) {
@@ -49,6 +61,8 @@ export async function searchRoutes(app: FastifyInstance) {
     );
 
     if (cached.rowCount && cached.rowCount > 0) {
+      const meaning = (cached.rows[0].result_payload as { meaning: string }).meaning;
+      void fireDistractors(user_id, input_normalised, meaning);
       return reply.send({ source: 'cache', ...cached.rows[0].result_payload });
     }
 
@@ -62,6 +76,7 @@ export async function searchRoutes(app: FastifyInstance) {
         [input_normalised, JSON.stringify(vocabResult)]
       );
 
+      void fireDistractors(user_id, input_normalised, vocabResult.meaning);
       return reply.send({ source: 'ai', ...vocabResult });
     } catch (err) {
       request.log.error(err, 'AI service error');

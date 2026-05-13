@@ -4,15 +4,53 @@ import { pool } from '../src/db/client';
 import pLimit from 'p-limit';
 
 const WORDS = [
-  'discuss', 'look', 'play', 'put', 'remember', 'seem', 'stop', 'try',
-  'understand', 'write', 'advantage', 'agreement', 'challenge', 'choice',
-  'commitment', 'communication', 'community', 'concern', 'consequence',
-  'creativity', 'detail', 'direction', 'evidence', 'habit', 'initiative',
-  'interest', 'judgment', 'issue', 'limitation', 'opportunity', 'outcome',
-  'performance', 'pressure', 'process', 'result', 'strategy', 'strength',
-  'uncertainty', 'success', 'weakness', 'eloquent', 'nuanced', 'sophisticated',
-  'resilient', 'pragmatic', 'transparent', 'decisive', 'agree with',
-  'interested in', 'committed to', 'before accepting',
+  // adjectives
+  'good', 'happy', 'sad', 'important', 'interesting', 'beautiful', 'terrible',
+  'amazing', 'awful', 'great', 'nice', 'bad', 'big', 'small', 'fast', 'slow',
+  'smart', 'stupid', 'strong', 'weak', 'rich', 'poor', 'old', 'new', 'easy',
+  'hard', 'clear', 'dark', 'light', 'heavy', 'angry', 'calm', 'brave', 'shy',
+  'kind', 'mean', 'proud', 'humble', 'honest', 'rude', 'careful', 'careless',
+  'serious', 'funny', 'boring', 'exciting', 'dangerous', 'safe', 'useful', 'useless',
+  // verbs
+  'accept', 'agree', 'allow', 'avoid', 'begin', 'believe', 'bring', 'build',
+  'buy', 'call', 'carry', 'catch', 'change', 'choose', 'come', 'consider',
+  'continue', 'create', 'decide', 'discover', 'discuss', 'feel', 'find', 'finish',
+  'follow', 'forget', 'give', 'grow', 'happen', 'hear', 'help', 'hold', 'hope',
+  'improve', 'include', 'keep', 'know', 'learn', 'leave', 'let', 'like', 'listen',
+  'live', 'look', 'lose', 'love', 'make', 'mean', 'meet', 'move', 'need', 'offer',
+  'open', 'pay', 'plan', 'play', 'provide', 'put', 'reach', 'read', 'realize',
+  'receive', 'remember', 'run', 'say', 'see', 'seem', 'send', 'show', 'start',
+  'stay', 'stop', 'take', 'talk', 'tell', 'think', 'try', 'turn', 'understand',
+  'use', 'wait', 'want', 'work', 'write',
+  // nouns
+  'ability', 'action', 'advantage', 'agreement', 'answer', 'area', 'attempt',
+  'attention', 'attitude', 'balance', 'barrier', 'benefit', 'challenge', 'choice',
+  'clarity', 'commitment', 'communication', 'community', 'complexity', 'concern',
+  'confidence', 'conflict', 'connection', 'consequence', 'context', 'contribution',
+  'control', 'creativity', 'culture', 'decision', 'detail', 'difference',
+  'difficulty', 'direction', 'discipline', 'discussion', 'diversity', 'effort',
+  'emotion', 'energy', 'environment', 'evidence', 'experience', 'failure',
+  'feedback', 'focus', 'freedom', 'growth', 'habit', 'impact', 'improvement',
+  'influence', 'information', 'initiative', 'innovation', 'insight', 'integrity',
+  'interaction', 'interest', 'issue', 'judgment', 'knowledge', 'language',
+  'leadership', 'limitation', 'mindset', 'motivation', 'opportunity', 'outcome',
+  'passion', 'patience', 'perception', 'performance', 'perspective', 'potential',
+  'pressure', 'priority', 'problem', 'process', 'progress', 'purpose', 'quality',
+  'relationship', 'responsibility', 'result', 'risk', 'solution', 'strategy',
+  'strength', 'structure', 'success', 'support', 'tension', 'trust', 'uncertainty',
+  'understanding', 'value', 'vision', 'weakness',
+  // power words
+  'meticulous', 'eloquent', 'articulate', 'compelling', 'concise', 'profound',
+  'subtle', 'nuanced', 'sophisticated', 'resilient', 'tenacious', 'diligent',
+  'methodical', 'pragmatic', 'innovative', 'collaborative', 'transparent',
+  'authentic', 'empathetic', 'decisive',
+  // phrases
+  'agree on', 'agree with', 'agree to', 'interested in', 'good at',
+  'responsible for', 'capable of', 'committed to', 'focused on', 'aware of',
+  'before accepting', 'prior to', 'in addition to', 'as a result', 'in contrast',
+  // sentences
+  'the food was good', 'the meeting was good', 'it was a good experience',
+  'the presentation was good', 'she did a good job',
 ];
 
 async function warmCache() {

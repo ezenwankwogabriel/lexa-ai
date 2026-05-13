@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import pLimit from 'p-limit';
 import { pool } from '../db/client';
 import { generateVocabResult } from '../services/ai';
+import { scheduleDistractors } from '../services/distractors';
 
 type Context = 'work' | 'writing' | 'conversation' | 'general';
 
@@ -194,6 +195,18 @@ export async function onboardingRoutes(app: FastifyInstance) {
         [user_id, word]
       );
       if (result.rowCount && result.rowCount > 0) wordsQueued++;
+    }
+
+    // 4b. Fire distractor generation for newly queued words (fire-and-forget)
+    const queuedWords = await pool.query<{ id: string; input_normalised: string; meaning: string }>(
+      `SELECT rq.id, rq.input_normalised, rc.result_payload->>'meaning' AS meaning
+       FROM review_queue rq
+       JOIN result_cache rc ON rc.input_normalised = rq.input_normalised
+       WHERE rq.user_id = $1 AND rq.input_normalised = ANY($2) AND rq.distractors IS NULL`,
+      [user_id, normalised]
+    );
+    for (const row of queuedWords.rows) {
+      void scheduleDistractors(row.id, row.input_normalised, row.meaning);
     }
 
     // 5. Mark user as onboarded

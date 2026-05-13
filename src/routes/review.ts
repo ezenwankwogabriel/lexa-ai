@@ -86,11 +86,13 @@ export async function reviewRoutes(app: FastifyInstance) {
            rq.id              AS review_id,
            rq.input_normalised,
            rc.result_payload,
-           rq.repetition_count
+           rq.repetition_count,
+           rq.distractors
          FROM review_queue rq
          JOIN result_cache rc ON rc.input_normalised = rq.input_normalised
          WHERE rq.user_id = $1
            AND rq.next_review_at <= now()
+           AND rq.source = 'search'
          ORDER BY rq.next_review_at ASC
          LIMIT 10`,
         [user_id]

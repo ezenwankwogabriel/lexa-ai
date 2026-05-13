@@ -7,7 +7,11 @@ import { reviewRoutes } from './routes/review';
 import { deviceRoutes } from './routes/device';
 import { vocabularyRoutes } from './routes/vocabulary';
 import { onboardingRoutes } from './routes/onboarding';
+import { expandRoutes } from './routes/expand';
+import { quizRoutes } from './routes/quiz';
 import { startReviewReminderJob } from './jobs/reviewReminder';
+import { startVocabReplenishmentJob } from './jobs/vocabReplenishment';
+import { runDistractorBackfill } from './jobs/distractorBackfill';
 
 const app = Fastify({ logger: true });
 
@@ -18,8 +22,12 @@ app.register(reviewRoutes);
 app.register(deviceRoutes);
 app.register(vocabularyRoutes);
 app.register(onboardingRoutes);
+app.register(expandRoutes);
+app.register(quizRoutes);
 
 startReviewReminderJob();
+startVocabReplenishmentJob();
+void runDistractorBackfill();
 
 const port = parseInt(process.env.PORT ?? '3000', 10);
 
